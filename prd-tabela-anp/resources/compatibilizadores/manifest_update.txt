@@ -1,0 +1,91 @@
+MANIFESTO DE ATUALIZAÇÃO
+
+Data : 11/12/2023
+Hora : 16:46:47
+Arquivo de atualização diferencial baseado em projeto gerado pelo Configurador
+Projeto : 000025
+Descrição : CÓDIGO ANP                                        
+Versão : 0001
+Release de referência : 12.1.2310 
+Responsável pelo Projeto: 000000 - Administrador
+Geração do Pacote: 000000 - Administrador
+-----------------------------
+Componentes do arquivo de atualização :
+
+------------
+SIX
+
+Operação:Inclusão ou Alteração
+Tabela : Z01
+Ordem : 1
+
+
+------------
+SX3
+
+Operação:Inclusão ou Alteração
+Campo : B1_CODANP 
+
+Operação:Inclusão ou Alteração
+Campo : B1_DESANP 
+
+Operação:Inclusão ou Alteração
+Campo : Z01_FILIAL
+
+Operação:Inclusão ou Alteração
+Campo : Z01_CODANP
+
+Operação:Inclusão ou Alteração
+Campo : Z01_DESANP
+
+
+------------
+SX7
+
+Operação:Inclusão ou Alteração
+Campo : B1_CODANP 
+Sequência : 501
+
+
+------------
+SXB
+
+Operação:Inclusão ou Alteração
+Consulta : Z01   
+Tipo : 1
+Sequência : 01
+Coluna : DB
+
+Operação:Inclusão ou Alteração
+Consulta : Z01   
+Tipo : 2
+Sequência : 01
+Coluna : 01
+
+Operação:Inclusão ou Alteração
+Consulta : Z01   
+Tipo : 4
+Sequência : 01
+Coluna : 01
+
+Operação:Inclusão ou Alteração
+Consulta : Z01   
+Tipo : 4
+Sequência : 01
+Coluna : 02
+
+Operação:Inclusão ou Alteração
+Consulta : Z01   
+Tipo : 5
+Sequência : 01
+Coluna :   
+
+
+------------
+Helps (hlppack*.txt)
+
+Chave : B1_CODANP 
+Chave : B1_DESANP 
+Chave : Z01_FILIAL
+Chave : Z01_CODANP
+Chave : Z01_DESANP
