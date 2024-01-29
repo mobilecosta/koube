@@ -9,8 +9,11 @@ User Function Etiqueta()
 		MsAguarde({|| ImpEtiq() },"Impressão de etiqueta","Aguarde...")
 	EndIf
  
-Return
- 
+Return 
+
+
+
+   
 Static Function ImpEtiq()
 	Local cQuery	:= ""
 	Local cProdDe	:= MV_PAR01
@@ -20,6 +23,7 @@ Static Function ImpEtiq()
 	Local cLogo 	:= "\system\logo.jpg"
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont16N	:= TFont():New('Arial',16,16,,.T.,,,,.T.,.F.,.F.)
+	Local nLote		:= 001
  
 	Local lAdjustToLegacy 	:= .F.
 	Local lDisableSetup  	:= .T.
@@ -41,7 +45,12 @@ Static Function ImpEtiq()
 	
 	//Para saber mais sobre o componente FWMSPrinter acesse http://tdn.totvs.com/display/public/mp/FWMsPrinter
  
-	cQuery := "sua consulta SQL"
+	//cQuery := "CONSULTA"
+		cQuery := "SELECT B1_DESC, B1_CODGTIN, DY3_DESCRI, DY3_NRISCO, B1_PRVALID, C2_DATPRI, C2_NUM, C2_ITEM, C2_SEQUEN FROM " + RetSqlName("SB1") + " B1 WHERE B1_COD = " + _cCodPro + " AND B1.D_E_L_E_T_ = '' "
+		cQuery += "INNER JOIN " + RetSqlName("SB5") + " B5 ON B5.B5_COD = B1.B1_CODIGO AND B5.B5_FILIAL = " xFilial("SB1") + " AND B5.D_E_L_E_T_ = '' "
+		cQuery += "INNER JOIN " + RetSqlName("DY3") + "DY3 ON DY3_ONU = B5_ONU AND AND DY3.DY3_FILIAL = " xFilial("SB1") + "  AND DY3.D_E_L_E_T_ = '' "
+		cQuery += "INNER JOIN " + RetSqlName("SC2") + "C2 ON C2_PRODUTO = B1.B1_CODIGO AND C2_FILIAL = " xFilial("SB1") + "  AND C2.D_E_L_E_T_ = '' "
+
  
 	TcQuery cQuery New Alias "QRYTMP"
 	QRYTMP-&gt;(DbGoTop())
@@ -75,6 +84,21 @@ Static Function ImpEtiq()
  
 			nLin+= 40
 			oPrinter:Say(nLin,nCol,alltrim(QRYTMP-&gt;CODIGO) + " - " + alltrim(QRYTMP-&gt;DESC),oFont16)
+
+			/*teste qr code ITEM j
+			PREPARE ENVIRONMENT EMPRESA "99" FILIAL "01"
+    			oPrinter      := FWMSPrinter():New('teste',6,.F.,,.T.,,,,,.F.)
+    			oPrinter:Setup()
+    			oPrinter:setDevice(IMP_PDF)
+    			oPrinter:cPathPDF :="C:\"
+    			oPrinter:Say(180,0,"Teste para DataMatrix")
+    			oPrinter:DataMatrix(0,300,"DataMatrix gerado com sucesso", 100)
+    			oPrinter:EndPage()
+    			oPrinter:Preview()
+    		FreeObj(oPrinter)
+    		oPrinter := Nil
+			RESET ENVIRONMENT
+fim teste */
  
 			oPrinter:EndPage()
 		Next
@@ -118,3 +142,44 @@ Static Function ValidPerg()
 		lRet := .T.
 	EndIf
 Return lRet
+
+Static Function Valid()
+
+Local _aArea := FWGetArea()
+Local _cCodPro := " "
+Local _lRet := .T.
+Local _cQuery := ""
+lOCAL _dDvalid := stod("//")
+/*
+Para fins de identificação dos produtos produzidos como Produtos Intermediários (PI’s) e Produtos Acabados
+(PA’s) deverá ser emitida a etiqueta de produção.
+Esta etiqueta deve ser emitida na rotina MATA650, (na tela de ordem de produção) diretamente no browser,
+através do botão outras ações – Etiqueta Produção. Ao clicar neste botão, deverá ser exibida tela de parâmetros,
+permitindo o usuário definir alguns dos dados que serão impressos, conforme detalhamento a seguir:
+a) Código de Barras: A partir do C2_PRODUTO, consultar B1_CODGTIN e imprimir código de barras
+b) Código do Produto: C2_PRODUTO; “12” (Apesar do Protheus permitir até 15 caracteres, o cliente
+atualmente utiliza apenas 4 caracteres, prever layout para 5).
+c) Descrição Produto: A partir do C2_PRODUTO, consultar B1_DESC;
+d) Código ONU: A partir do C2_PRODUTO, Consultar B5_ONU;(se não tiver dados da ONU, retornar vazio)
+e) Descrição ONU: A partir do C2_PRODUTO, Consultar B5_ONU, e obter DY3_DESCRI
+f) Risco ONU: A partir do C2_PRODUTO, Consultar B5_ONU, e obter DY3_NRISCO
+g) OP: C2_NUM+C2_ITEM+C2_SEQUEN;
+h) Lote: C2_NUM+C2_ITEM+C2_SEQUEN+“001” (Sabe-se que o lote é gerado somente no apontamento,
+porém no projeto da Koube o lote terá o mesmo número da ordem de produção, acrescido de uma
+sequência numérica de três caracteres a começar por 001.) Neste caso na etiqueta será apenas uma
+representação gráfica do lote.
+i) Validade: A partir da data da C2_DATPRI, calcular validade conforme B1_PRVALID, retornando apenas
+mês e ano. Exemplo, se a C2_DATPRI for 16/11/2024 – e no B1_PRVALID estiver com 15 dias, o resultado
+é 01/12/2024 – neste caso imprimir apenas 12/24
+j) QRCode: Concatenar Código do Produto + Lote + Validade (MMAA)
+*/
+
+// TESTE ITEM I
+If Substr(C2_DATAPRI,1,2) < 15
+	
+
+
+
+
+
+Return
