@@ -90,6 +90,7 @@ Static Function ImpEtiq()
  
 			nLin+= 40
 			oPrinter:Say(nLin,nCol,alltrim(QRYTMP->B1_CODGTIN) + " - " + alltrim(QRYTMP->B1_DESC),oFont16)
+			oPrinter:Say(nLin + 10,nCol,alltrim(" " + QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN) ,oFont16)
 
 			/*teste qr code ITEM j
 			PREPARE ENVIRONMENT EMPRESA "99" FILIAL "01"
@@ -180,9 +181,8 @@ mês e ano. Exemplo, se a C2_DATPRI for 16/11/2024 – e no B1_PRVALID estiver com 
 j) QRCode: Concatenar Código do Produto + Lote + Validade (MMAA)
 */
 
-// TESTE ITEM I
 _dDvalid := DaySum( dData1, dValid ) 	
-
+_dDvalid := Substr(_dDvalid,3,7)
 
 
 
