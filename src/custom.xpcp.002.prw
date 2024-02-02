@@ -28,7 +28,7 @@ Local cSemaforo := "SEQLOTOP"+cOp
     EndSql
 
     If !(cAliasTrb)->(Eof())
-        cRet := Soma1(Strzero((cAliasTrb)->QTDE,3))
+        cRet := Strzero((cAliasTrb)->QTDE,3)
     EndIf
 
     (cAliasTrb)->(DBCloseArea())
