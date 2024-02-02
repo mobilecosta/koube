@@ -1,29 +1,17 @@
 #INCLUDE "protheus.Ch"
-
+//--------------------------------------------
+/*/{Protheus.doc} RFAT001
+RELATORIO cUSTOMIZADO PICK LIST
+@type function
+@version 1.0
+@author Flavio Luiz Vicco   
+@since 30/06/2006
+@alterado por: Roberto R. Mezzalira - 02/02/2024
 /*/
-ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
-±±³Fun‡…o    ³ MATR777  ³ Autor ³ Flavio Luiz Vicco     ³ Data ³ 30.06.06 ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
-±±³Descri‡…o ³ Pick-List (Expedicao)                                      ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
-±±³Sintaxe e ³ MATR777(void)                                              ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
-±±³ Uso      ³ Generico                                                   ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
-±±³ ATUALIZACOES SOFRIDAS DESDE A CONSTRUCAO INICIAL.                     ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
-±±³ PROGRAMADOR  ³ DATA   ³ BOPS ³  MOTIVO DA ALTERACAO                   ³±±
-±±ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
-±±³              ³        ³      ³                                        ³±±
-±±ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
-/*/
+//--------------------------------------------
 User Function RFAT001
 Local wnrel   := "RFAT001"
-Local tamanho := "M"
+Local tamanho := "G"
 Local titulo  := "Pick-List  (Expedicao)"
 Local cDesc1  := "Emissao de produtos a serem separados pela expedicao, para"
 Local cDesc2  := "determinada faixa de pedidos."
@@ -31,7 +19,7 @@ Local cDesc3  := ""
 Local cString := "SC9"
 Local cPerg   := "MTR777"
 
-PRIVATE aReturn  := {"Zebrado", 1,"Administracao", 2, 2, 1, "",0 }
+PRIVATE aReturn  := {"Zebrado", 1,"Administracao", 2, 2, 2, "",0 }
 PRIVATE nomeprog := "RFAT001"
 PRIVATE nLastKey := 0
 PRIVATE nBegin   := 0
@@ -223,7 +211,7 @@ MS_FLUSH()
 Return NIL
 
 Static Function C777ImpDet(cAliasNew,lQuery,nQtde,cEndereco,lEnd,titulo,cDesc1,cDesc2,cDesc3,tamanho)
-Local cabec1  := "Codigo          Desc. do Material              UM Quantidade  2a.UM   QTD  2a.UM   Amz   Endereco     Lote       Validade    Pedido"
+Local cabec1  := "Codigo          Desc. do Material                                  UM     Quantidade       2a.UM      QTD  2a.UM            Amz   Endereco         Lote            Validade     Pedido"
 
 /*
           1         2         3         4         5         6         7         8         9         10        11        12        13         			
@@ -281,29 +269,29 @@ Else
 EndIf
 
 @ li, 00 Psay cProd1                    Picture "@!"
-@ li, 16 Psay Subs(SB1->B1_DESC,1,30)	Picture "@!"
-@ li, 47 Psay SB1->B1_UM   				Picture "@!"
-@ li, 50 Psay PadL(cQuant1, 11)			Picture "@!"
+@ li, 16 Psay ALLTRIM(SB1->B1_DESC)  	Picture "@!" //Subs(SB1->B1_DESC,1,50)
+@ li, 67 Psay SB1->B1_UM   				Picture "@!" //47
+@ li, 70 Psay Transform(nQtde, "@E 999,999,999.99") //Picture "@!" 50PadL(cQuant1, 11)
 
-@ li, 62 Psay SB1->B1_SEGUM	
+@ li, 94 Psay SB1->B1_SEGUM	
 
 if (SB1->B1_TIPCONV == 'D')
-	@ li, 70 Psay nQtde / SB1->B1_CONV
+	@ li, 98 Psay Transform((nQtde / SB1->B1_CONV), "@E 999,999,999.99")  //nQtde / SB1->B1_CONV
 else
-	@ li, 70 Psay nQtde * SB1->B1_CONV
+	@ li, 98 Psay Transform((nQtde * SB1->B1_CONV), "@E 999,999,999.99")//nQtde * SB1->B1_CONV
 endif
 	
-@ li, 83 Psay (cAliasNew)->C9_LOCAL
+@ li, 125 Psay (cAliasNew)->C9_LOCAL //83
 
-@ li, 89 Psay cEndereco
-@ li, 102 Psay (cAliasNew)->C9_LOTECTL	Picture "@!"
-@ li, 113 Psay (cAliasNew)->C9_DTVALID	Picture PesqPict("SC9","C9_DTVALID")
-@ li, 125 Psay (cAliasNew)->C9_PEDIDO	Picture "@!"
+@ li, 130 Psay cEndereco //89
+@ li, 147 Psay (cAliasNew)->C9_LOTECTL	Picture "@!" //102
+@ li, 163 Psay (cAliasNew)->C9_DTVALID	Picture PesqPict("SC9","C9_DTVALID")//113
+@ li, 176 Psay (cAliasNew)->C9_PEDIDO	Picture "@!"//125
 li++
 
 If lQuebra
 	@ li, 00 Psay cProd2                      Picture "@!"
-	@ li, 50 Psay PadR(cQuant2, 11)           Picture "@!"
+	//@ li, 50 Psay PadR(cQuant2, 11)           Picture "@!"
 	li++
 EndIf
 
