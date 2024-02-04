@@ -1,8 +1,10 @@
 #INCLUDE "RPTDEF.CH"
 #INCLUDE "FWPrintSetup.ch"
 #INCLUDE "protheus.ch"
-#Include 'TopConn.ch'
-User Function Etiqueta()
+#Include "TopConn.ch"
+
+
+User Function apcpet001()
 	Local lFinal	:= .T.
  
 	If ValidPerg()
@@ -16,14 +18,18 @@ Return
    
 Static Function ImpEtiq()
 	Local cQuery	:= ""
-	Local cProdDe	:= MV_PAR01
-	Local cProdAte	:= MV_PAR02
+	Local _cCodPro	:= MV_PAR01
+	Local _cCodPro2	:= MV_PAR02
 	Local nQuant	:= MV_PAR03
-	Local cImpress  := Alltrim(MV_PAR04) //pego o nome da impressora
+	Local cImpress  := "Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
 	Local cLogo 	:= "\system\logo.jpg"
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
+	Local oFont13	:= TFont():New('Arial',13,13,,.F.,,,,.T.,.F.,.F.)
 	Local oFont16N	:= TFont():New('Arial',16,16,,.T.,,,,.T.,.F.,.F.)
+	Local oFont13N	:= TFont():New('Arial',13,13,,.T.,,,,.T.,.F.,.F.)
 	Local nLote		:= 001
+	//Local _cCodPro := ""
+	Local dData := STOD("  /  /  ")
  
 	Local lAdjustToLegacy 	:= .F.
 	Local lDisableSetup  	:= .T.
@@ -41,35 +47,35 @@ Static Function ImpEtiq()
  
 	MsProcTxt("Identificando a impressora...")
  
-	Private oPrinter := FWMSPrinter():New("produto"+Alltrim(__cUserID)+".etq",IMP_SPOOL,lAdjustToLegacy,"/spool/",lDisableSetup,,,Alltrim(cImpress) /*parametro que recebe a impressora*/)
-	
-	//Para saber mais sobre o componente FWMSPrinter acesse http://tdn.totvs.com/display/public/mp/FWMsPrinter
- 
-	//cQuery := "CONSULTA"
-		cQuery := "SELECT B1_DESC, B1_CODGTIN, DY3_DESCRI, DY3_NRISCO, B1_PRVALID, C2_DATPRI, C2_NUM, C2_ITEM, C2_SEQUEN FROM " + RetSqlName("SB1") + " B1 WHERE B1_COD = " + _cCodPro + " AND B1.D_E_L_E_T_ = '' "
-		cQuery += "INNER JOIN " + RetSqlName("SB5") + " B5 ON B5.B5_COD = B1.B1_CODIGO AND B5.B5_FILIAL = " xFilial("SB1") + " AND B5.D_E_L_E_T_ = '' "
-		cQuery += "INNER JOIN " + RetSqlName("DY3") + "DY3 ON DY3_ONU = B5_ONU AND AND DY3.DY3_FILIAL = " xFilial("SB1") + "  AND DY3.D_E_L_E_T_ = '' "
-		cQuery += "INNER JOIN " + RetSqlName("SC2") + "C2 ON C2_PRODUTO = B1.B1_CODIGO AND C2_FILIAL = " xFilial("SB1") + "  AND C2.D_E_L_E_T_ = '' "
+	//Private oPrinter := FWMSPrinter():New("produto"+Alltrim(__cUserID)+".etq",IMP_SPOOL,lAdjustToLegacy,"/spool/",lDisableSetup,,,Alltrim(cImpress) /*parametro que recebe a impressora*/)
+	Private oPrinter := FWMSPrinter():New("Produto"+Alltrim(_cCodPro)+".etq",IMP_SPOOL,lAdjustToLegacy,"/spool/",lDisableSetup,,,Alltrim(cImpress) /*parametro que recebe a impressora*/)
 
+ 		cQuery := "SELECT B1_COD, B1_DESC, B1_CODGTIN, DY3_DESCRI, DY3_NRISCO, B1_PRVALID, C2_DATPRI, C2_NUM, C2_ITEM, C2_SEQUEN, C2_OP, DY3_ONU, DY3_DESCRI FROM " + RetSqlName("SB1") + " B1 "
+		cQuery += "LEFT JOIN " + RetSqlName("SB5") + " B5 ON B5.B5_COD = B1.B1_COD AND B5.B5_FILIAL = '" + xFilial("SB1") + "' AND B5.D_E_L_E_T_ = '' "
+		cQuery += "LEFT JOIN " + RetSqlName("DY3") + " DY3 ON DY3_ONU = B5.B5_ONU AND DY3.DY3_FILIAL = '" +substr(xFilial("SB1"),1,4) + "'  AND DY3.D_E_L_E_T_ = '' "
+		cQuery += "LEFT JOIN " + RetSqlName("SC2") + " C2 ON C2.C2_PRODUTO = B1.B1_COD AND C2_FILIAL = '" + xFilial("SB1") + "'  AND C2.D_E_L_E_T_ = '' "
+		cQuery += "WHERE B1.B1_COD between  '" + alltrim(_cCodPro) + "' AND '" + alltrim(_cCodPro2) + "' AND B1.D_E_L_E_T_ = '' "
  
 	TcQuery cQuery New Alias "QRYTMP"
-	QRYTMP-&gt;(DbGoTop())
+	QRYTMP->(DbGoTop())
  
 	oPrinter:SetMargin(001,001,001,001)
  
-	While QRYTMP-&gt;(!Eof())
+	While QRYTMP->(!Eof())
 		For nR := 1 to nQuant
 			nLin := 10
 			nCol := 22
  
-			MsProcTxt("Imprimindo "+alltrim(QRYTMP-&gt;CODIGO) + " - " + alltrim(QRYTMP-&gt;DESC)+"...")
+			MsProcTxt("Imprimindo "+alltrim(QRYTMP->B1_CODGTIN) + " - " + alltrim(QRYTMP->B1_DESC)+"...")
+
+			dData := Valid(QRYTMP->C2_DATPRI, QRYTMP->B1_PRVALID)
  
 			oPrinter:StartPage()
  
 			oPrinter:SayBitmap(nLin,nCol,cLogo,100,030)
  
 			nLin+= 45
-			oPrinter:Say(nLin,nCol,"Produto",oFont16)
+			oPrinter:Say(nLin,nCol,QRYTMP->B1_COD,oFont13)
  
 			nLinC		:= 4.95		//Linha que será impresso o Código de Barra
 			nColC		:= 1.6		//Coluna que será impresso o Código de Barra
@@ -80,10 +86,23 @@ Static Function ImpEtiq()
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
  
-			oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP-&gt;CODBAR), oPrinter,/*lCheck*/,/*Color*/,/*lHorz*/, nWidth, nHeigth,.F.,/*cFont*/,/*cMode*/,.F./*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
+			oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP->B1_CODGTIN), oPrinter,/*lCheck*/,/*Color*/,/*lHorz*/, nWidth, nHeigth,.F.,/*cFont*/,/*cMode*/,.F./*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
  
 			nLin+= 40
-			oPrinter:Say(nLin,nCol,alltrim(QRYTMP-&gt;CODIGO) + " - " + alltrim(QRYTMP-&gt;DESC),oFont16)
+			oPrinter:Say(nLin,nCol, "ONU" + alltrim(QRYTMP->DY3_ONU),oFont16)
+
+			oPrinter:Say(nLin + 10,nCol, alltrim(QRYTMP->DY3_DESCRI) + " RISCO " +  DY3_NRISCO	 ,oFont16)
+			nLin+= 40
+			oPrinter:Say(nLin,nCol,alltrim(QRYTMP->B1_CODGTIN) + " - " + alltrim(QRYTMP->B1_DESC),oFont16)
+			nLin+= 40
+			oPrinter:Say(nLin + 10,nCol,alltrim(" " + QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN) ,oFont16)
+			nLin+= 40
+			oPrinter:Say(nLin + 10,nCol,"Ordem de produção " + alltrim(QRYTMP->C2_OP) ,oFont13)
+			nLin+= 40
+			oPrinter:Say(nLin + 10,nCol,"Lote" + " xxxxxxx" ,oFont13)
+			nLin+= 40
+			oPrinter:Say(nLin + 10,nCol,"Validade" + dData ,oFont13)
+			nLin+= 40
 
 			/*teste qr code ITEM j
 			PREPARE ENVIRONMENT EMPRESA "99" FILIAL "01"
@@ -102,10 +121,10 @@ fim teste */
  
 			oPrinter:EndPage()
 		Next
-		QRYTMP-&gt;(DbSkip())
+		QRYTMP->(DbSkip())
 	EndDo
 	oPrinter:Print()
-	QRYTMP-&gt;(DbCloseArea())
+	QRYTMP->(DbCloseArea())
  
 Return
  
@@ -119,11 +138,11 @@ Static Function ValidPerg()
 	Local cProdAte	:= ""
 	Local cLocal	:= Space(99)
  
-	If Empty(getMV("ZZ_IMPRESS")) //se o parametro estiver vazio, ja o defino com a impressora PDFCreator 
-		aOpcoes := {"PDFCreator"}
-	Else
-		aOpcoes := Separa(getMV("ZZ_IMPRESS"),";")
-	Endif
+	//If Empty(getMV("ZZ_IMPRESS")) //se o parametro estiver vazio, ja o defino com a impressora PDFCreator 
+	//	aOpcoes := {"PDFCreator"}
+	//Else
+	//	aOpcoes := Separa(getMV("ZZ_IMPRESS"),";")
+	//Endif
  
 	cProdDe := space(TamSX3("B1_COD")[1])
 	cProdAte:= REPLICATE("Z",TAMSX3("B1_COD")[1])
@@ -131,7 +150,7 @@ Static Function ValidPerg()
 	aAdd(aParamBox,{01,"Produto de"	  			,cProdDe 	,""					,"","SB1"	,"", 60,.F.})	// MV_PAR01
 	aAdd(aParamBox,{01,"Produto ate"	   		,cProdAte	,""					,"","SB1"	,"", 60,.T.})	// MV_PAR02
 	aAdd(aParamBox,{01,"Quantidade Etiqueta"	,1			,"@E 9999"			,"",""		,"", 60,.F.})	// MV_PAR03
-	aadd(aParamBox,{02,"Imprimir em"			,Space(50)	,aOpcoes			,100,".T.",.T.,".T."})		// MV_PAR04
+	aadd(aParamBox,{02,"Imprimir em"			,"Microsoft Print to PDF" /*Space(50)*/	,aOpcoes			,100,".T.",.T.,".T."})		// MV_PAR04
  
 	If ParamBox(aParamBox,"Etiqueta Produto",/*aRet*/,/*bOk*/,/*aButtons*/,.T.,,,,FUNNAME(),.T.,.T.)
  
@@ -143,7 +162,7 @@ Static Function ValidPerg()
 	EndIf
 Return lRet
 
-Static Function Valid()
+Static Function Valid(dData1, dValid)
 
 Local _aArea := FWGetArea()
 Local _cCodPro := " "
@@ -174,12 +193,12 @@ mês e ano. Exemplo, se a C2_DATPRI for 16/11/2024 – e no B1_PRVALID estiver com 
 j) QRCode: Concatenar Código do Produto + Lote + Validade (MMAA)
 */
 
-// TESTE ITEM I
-If Substr(C2_DATAPRI,1,2) < 15
-	
+_dDvalid := DaySum( stod(dData1), dValid )
+//_dDvalid := DaySum( stod(substr(dData1,7,2) + "/" + substr(dData1,4,2)+ "/" + substr(dData1,1,2)), dValid ) 	
+//substr(dData1,7,2) + "/" + substr(dData1,4,2)+ "/" + substr(dData1,1,2)
+_dDvalid := substr(anomes(_dDvalid),5,2) + substr(anomes(_dDvalid),1,4)
 
 
 
 
-
-Return
+Return _dDvalid
