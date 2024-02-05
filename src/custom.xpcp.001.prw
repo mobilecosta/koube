@@ -4,8 +4,7 @@
 #Include "TopConn.ch"
 
 
-User Function apcpet001()
-	Local lFinal	:= .T.
+User Function apcpet001() 
  
 	If ValidPerg()
 		MsAguarde({|| ImpEtiq() },"Impressão de etiqueta","Aguarde...")
@@ -25,8 +24,13 @@ Static Function ImpEtiq()
 	Local cLogo 	:= "\system\logo.jpg"
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont13	:= TFont():New('Arial',13,13,,.F.,,,,.T.,.F.,.F.)
+	Local oFont10	:= TFont():New('Arial',10,10,,.F.,,,,.T.,.F.,.F.)
+	Local oFont45	:= TFont():New('Arial',45,45,,.F.,,,,.T.,.F.,.F.)
 	Local oFont16N	:= TFont():New('Arial',16,16,,.T.,,,,.T.,.F.,.F.)
 	Local oFont13N	:= TFont():New('Arial',13,13,,.T.,,,,.T.,.F.,.F.)
+	Local oFont10N	:= TFont():New('Arial',10,10,,.T.,,,,.T.,.F.,.F.)
+	Local oFont45N	:= TFont():New('Arial',45,45,,.T.,,,,.T.,.F.,.F.)
+
 	Local nLote		:= 001
 	//Local _cCodPro := ""
 	Local dData := STOD("  /  /  ")
@@ -85,24 +89,32 @@ Static Function ImpEtiq()
 			nPFWidth	:= 0.8		//Número do índice de ajuste da largura da fonte. Default 1
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
+			
+			//oPrinter:Box(70, 150, 10, 300, "-10")  alltrim(QRYTMP->B1_CODGTIN)                               .f.
+			oPrinter:FWMSBAR("CODE128" , nLinC , nColC, QRYTMP->B1_CODGTIN , oPrinter,/*lCheck*/,/*Color*/, .F./*lHorz*/, nWidth, nHeigth,.T./*teste vertical*/,/*cFont*/,/*cMode*/,.F./*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
  
-			oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP->B1_CODGTIN), oPrinter,/*lCheck*/,/*Color*/,/*lHorz*/, nWidth, nHeigth,.F.,/*cFont*/,/*cMode*/,.F./*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
- 
-			nLin+= 40
-			oPrinter:Say(nLin,nCol, "ONU" + alltrim(QRYTMP->DY3_ONU),oFont16)
+			
 
-			oPrinter:Say(nLin + 10,nCol, alltrim(QRYTMP->DY3_DESCRI) + " RISCO " +  DY3_NRISCO	 ,oFont16)
+			oPrinter:Say(nLin,nCol + 150, "ONU " + alltrim(QRYTMP->DY3_ONU),oFont16)
+
+			oPrinter:Say(nLin + 10, nCol + 150, alltrim(QRYTMP->DY3_DESCRI) + "   RISCO " +  QRYTMP->DY3_NRISCO	 ,oFont16)
 			nLin+= 40
-			oPrinter:Say(nLin,nCol,alltrim(QRYTMP->B1_CODGTIN) + " - " + alltrim(QRYTMP->B1_DESC),oFont16)
+			oPrinter:Say(nLin + 20, nCol + 165, alltrim( QRYTMP->DY3_NRISCO) ,oFont45)
 			nLin+= 40
-			oPrinter:Say(nLin + 10,nCol,alltrim(" " + QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN) ,oFont16)
+			//linha coluna
+			
+			//coluna linha tamanho
+			oPrinter:DataMatrix(310,160,alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN), 70)
+
 			nLin+= 40
-			oPrinter:Say(nLin + 10,nCol,"Ordem de produção " + alltrim(QRYTMP->C2_OP) ,oFont13)
-			nLin+= 40
-			oPrinter:Say(nLin + 10,nCol,"Lote" + " xxxxxxx" ,oFont13)
-			nLin+= 40
-			oPrinter:Say(nLin + 10,nCol,"Validade" + dData ,oFont13)
-			nLin+= 40
+			oPrinter:Say(nLin + 10,nCol + 100, alltrim(QRYTMP->B1_DESC) ,oFont16)
+			nLin+= 10
+			oPrinter:Say(nLin + 10,nCol + 100,"Ordem de Produção: " + alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN) ,oFont10)
+			nLin+= 10
+			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + " xxxxxxx" ,oFont10)
+			nLin+= 10
+			oPrinter:Say(nLin + 10,nCol + 100,"Validade: " + dData ,oFont10)
+	
 
 			/*teste qr code ITEM j
 			PREPARE ENVIRONMENT EMPRESA "99" FILIAL "01"
