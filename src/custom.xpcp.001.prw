@@ -114,22 +114,6 @@ Static Function ImpEtiq()
 			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + " xxxxxxx" ,oFont10)
 			nLin+= 10
 			oPrinter:Say(nLin + 10,nCol + 100,"Validade: " + dData ,oFont10)
-	
-
-			/*teste qr code ITEM j
-			PREPARE ENVIRONMENT EMPRESA "99" FILIAL "01"
-    			oPrinter      := FWMSPrinter():New('teste',6,.F.,,.T.,,,,,.F.)
-    			oPrinter:Setup()
-    			oPrinter:setDevice(IMP_PDF)
-    			oPrinter:cPathPDF :="C:\"
-    			oPrinter:Say(180,0,"Teste para DataMatrix")
-    			oPrinter:DataMatrix(0,300,"DataMatrix gerado com sucesso", 100)
-    			oPrinter:EndPage()
-    			oPrinter:Preview()
-    		FreeObj(oPrinter)
-    		oPrinter := Nil
-			RESET ENVIRONMENT
-fim teste */
  
 			oPrinter:EndPage()
 		Next
