@@ -7,9 +7,18 @@
 			"name": "TOTVS Language Debug",
 			"program": "${command:AskForProgramName}",
 			"cwb": "${workspaceFolder}",
-			"smartclientBin": "../totvs/bin/smartclient/smartclient.exe",
+			"smartclientBin": "C:/smartclient-koube/smartclient.exe",
 			"isMultiSession": true,
 			"enableTableSync": true
 		}
-	]
+	],
+	"lastPrograms": [
+		{
+			"label": "sigamid"
+		},
+		{
+			"label": "sigamdi"
+		}
+	],
+	"lastProgramExecuted": "sigamdi"
 }

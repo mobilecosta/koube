@@ -21,7 +21,7 @@ Static Function ImpEtiq()
 	Local _cCodPro2	:= MV_PAR02
 	Local nQuant	:= MV_PAR03
 	Local cImpress  := "Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
-	Local cLogo 	:= "\system\logo.jpg"
+	//Local cLogo 	:= "\system\logo.jpg"
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont13	:= TFont():New('Arial',13,13,,.F.,,,,.T.,.F.,.F.)
 	Local oFont10	:= TFont():New('Arial',10,10,,.F.,,,,.T.,.F.,.F.)
@@ -76,10 +76,10 @@ Static Function ImpEtiq()
  
 			oPrinter:StartPage()
  
-			oPrinter:SayBitmap(nLin,nCol,cLogo,100,030)
+			//oPrinter:SayBitmap(nLin,nCol,cLogo,100,030)
  
 			nLin+= 45
-			oPrinter:Say(nLin,nCol,QRYTMP->B1_COD,oFont13)
+			//oPrinter:Say(nLin,nCol,QRYTMP->B1_COD,oFont13)
  
 			nLinC		:= 4.95		//Linha que será impresso o Código de Barra
 			nColC		:= 1.6		//Coluna que será impresso o Código de Barra
@@ -90,8 +90,8 @@ Static Function ImpEtiq()
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
 			
-			//oPrinter:Box(70, 150, 10, 300, "-10")  alltrim(QRYTMP->B1_CODGTIN)                               .f.
-			oPrinter:FWMSBAR("CODE128" , nLinC , nColC, QRYTMP->B1_CODGTIN , oPrinter,/*lCheck*/,/*Color*/, .F./*lHorz*/, nWidth, nHeigth,.T./*teste vertical*/,/*cFont*/,/*cMode*/,.F./*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
+			//oPrinter:Box(70, 150, 10, 300, "-10")  alltrim(QRYTMP->B1_CODGTIN)                               .f.                                                            testar arial lltrim(QRYTMP->B1_CODGTIN)                                                                      
+			//oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP->B1_CODGTIN) , oPrinter,/*lCheck*/,/*Color*/, /*lHorz*/, nWidth, nHeigth,.T./*teste vertical*/,/*cFont*/,/*cMode*/,/*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
  
 			
 
@@ -99,12 +99,12 @@ Static Function ImpEtiq()
 
 			oPrinter:Say(nLin + 10, nCol + 150, alltrim(QRYTMP->DY3_DESCRI) + "   RISCO " +  QRYTMP->DY3_NRISCO	 ,oFont16)
 			nLin+= 40
-			oPrinter:Say(nLin + 20, nCol + 165, alltrim( QRYTMP->DY3_NRISCO) ,oFont45)
+			oPrinter:Say(nLin + 20, nCol + 165, alltrim(QRYTMP->DY3_NRISCO) ,oFont45)
 			nLin+= 40
 			//linha coluna
 			
 			//coluna linha tamanho
-			oPrinter:DataMatrix(310,160,alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN), 70)
+			oPrinter:DataMatrix(300,200,alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN), 80)
 
 			nLin+= 40
 			oPrinter:Say(nLin + 10,nCol + 100, alltrim(QRYTMP->B1_DESC) ,oFont16)
@@ -114,6 +114,26 @@ Static Function ImpEtiq()
 			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + " xxxxxxx" ,oFont10)
 			nLin+= 10
 			oPrinter:Say(nLin + 10,nCol + 100,"Validade: " + dData ,oFont10)
+
+            //MSBAR("CODE128",0.7,0.8,alltrim(QRYTMP->B1_CODGTIN),oPrinter,.F.,,.F.,0.013,0.7,,,,.F.)
+			MSBAR("CODE128",0.5,0.6,alltrim(QRYTMP->B1_CODGTIN),oPrinter,.F.,,.F.,0.05,0.7,.F.,,,.F.)
+/*			| 01 cTypeBar String com o tipo do codigo de barras               |
+|    "EAN13","EAN8","UPCA" ,"SUP5"   ,"CODE128"                    |
+|    "INT25","MAT25,"IND25","CODABAR","CODE3_9"                    |
+| 02 nRow           Numero da Linha em centimentros               |
+| 03 nCol           Numero da coluna em centimentros               |
+| 04 cCode          String com o conteudo do codigo               |
+| 05 oPr            Objeto Printer                                 |
+| 06 lcheck        Se calcula o digito de controle               |
+| 07 Cor            Numero da Cor, utilize a "common.ch"           |
+| 08 lHort          Se imprime na Horizontal                      |
+| 09 nWidth        Numero do Tamanho da barra em centimetros      |
+| 10 nHeigth        Numero da Altura da barra em milimetros        |
+| 11 lBanner        Se imprime o linha em baixo do codigo          |
+| 12 cFont          String com o tipo de fonte                     |
+| 13 cMode          String com o modo do codigo de barras CODE128 |/*/
+			//oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP->B1_CODGTIN) , oPrinter,/*lCheck*/,/*Color*/,/*lHorz*/, nWidth, nHeigth,/*teste vertical*/,/*cFont*/,/*cMode*/,/*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
+			//oPrinter:Box( 100,70,200,70,"-1" )
  
 			oPrinter:EndPage()
 		Next
