@@ -20,7 +20,7 @@ Static Function ImpEtiq()
 	Local _cCodPro	:= MV_PAR01
 	Local _cCodPro2	:= MV_PAR02
 	Local nQuant	:= MV_PAR03
-	Local cImpress  := "Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
+	Local cImpress  := MV_PAR04 //"Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
 	//Local cLogo 	:= "\system\logo.jpg"
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont13	:= TFont():New('Arial',13,13,,.F.,,,,.T.,.F.,.F.)
@@ -31,7 +31,7 @@ Static Function ImpEtiq()
 	Local oFont10N	:= TFont():New('Arial',10,10,,.T.,,,,.T.,.F.,.F.)
 	Local oFont45N	:= TFont():New('Arial',45,45,,.T.,,,,.T.,.F.,.F.)
 
-	Local nLote		:= 001
+	Local cLote		:= "001"
 	//Local _cCodPro := ""
 	Local dData := STOD("  /  /  ")
  
@@ -54,12 +54,13 @@ Static Function ImpEtiq()
 	//Private oPrinter := FWMSPrinter():New("produto"+Alltrim(__cUserID)+".etq",IMP_SPOOL,lAdjustToLegacy,"/spool/",lDisableSetup,,,Alltrim(cImpress) /*parametro que recebe a impressora*/)
 	Private oPrinter := FWMSPrinter():New("Produto"+Alltrim(_cCodPro)+".etq",IMP_SPOOL,lAdjustToLegacy,"/spool/",lDisableSetup,,,Alltrim(cImpress) /*parametro que recebe a impressora*/)
 
- 		cQuery := "SELECT B1_COD, B1_DESC, B1_CODGTIN, DY3_DESCRI, DY3_NRISCO, B1_PRVALID, C2_DATPRI, C2_NUM, C2_ITEM, C2_SEQUEN, C2_OP, DY3_ONU, DY3_DESCRI FROM " + RetSqlName("SB1") + " B1 "
+ 		cQuery := "SELECT B1_COD, B1_DESC, B1_CODGTIN, DY3_DESCRI, DY3_NRISCO, B1_PRVALID, C2_DATPRI, D3_LOTECTL, C2_NUM, C2_ITEM, C2_SEQUEN, C2_OP, DY3_ONU, DY3_DESCRI FROM " + RetSqlName("SB1") + " B1 "
 		cQuery += "LEFT JOIN " + RetSqlName("SB5") + " B5 ON B5.B5_COD = B1.B1_COD AND B5.B5_FILIAL = '" + xFilial("SB1") + "' AND B5.D_E_L_E_T_ = '' "
 		cQuery += "LEFT JOIN " + RetSqlName("DY3") + " DY3 ON DY3_ONU = B5.B5_ONU AND DY3.DY3_FILIAL = '" +substr(xFilial("SB1"),1,4) + "'  AND DY3.D_E_L_E_T_ = '' "
 		cQuery += "LEFT JOIN " + RetSqlName("SC2") + " C2 ON C2.C2_PRODUTO = B1.B1_COD AND C2_FILIAL = '" + xFilial("SB1") + "'  AND C2.D_E_L_E_T_ = '' "
+		cQuery += "LEFT JOIN " + RetSqlName("SD3") + " D3 ON D3.D3_COD = B1.B1_COD AND D3_FILIAL = '" + xFilial("SB1") + "'  AND D3.D_E_L_E_T_ = '' "
 		cQuery += "WHERE B1.B1_COD between  '" + alltrim(_cCodPro) + "' AND '" + alltrim(_cCodPro2) + "' AND B1.D_E_L_E_T_ = '' "
- 
+
 	TcQuery cQuery New Alias "QRYTMP"
 	QRYTMP->(DbGoTop())
  
@@ -73,7 +74,11 @@ Static Function ImpEtiq()
 			MsProcTxt("Imprimindo "+alltrim(QRYTMP->B1_CODGTIN) + " - " + alltrim(QRYTMP->B1_DESC)+"...")
 
 			dData := Valid(QRYTMP->C2_DATPRI, QRYTMP->B1_PRVALID)
- 
+			cLote := QRYTMP->D3_LOTECTL
+			If cLote = "" 
+				cLote := "xxxxxx"
+			Endif	
+
 			oPrinter:StartPage()
  
 			//oPrinter:SayBitmap(nLin,nCol,cLogo,100,030)
@@ -90,7 +95,7 @@ Static Function ImpEtiq()
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
 			
-			//oPrinter:Box(70, 150, 10, 300, "-10")  alltrim(QRYTMP->B1_CODGTIN)                               .f.                                                            testar arial lltrim(QRYTMP->B1_CODGTIN)                                                                      
+			oPrinter:Box(150, 130, 90, 290, "-3")//  alltrim(QRYTMP->B1_CODGTIN)                               .f.                                                            testar arial lltrim(QRYTMP->B1_CODGTIN)                                                                      
 			//oPrinter:FWMSBAR("CODE128" , nLinC , nColC, alltrim(QRYTMP->B1_CODGTIN) , oPrinter,/*lCheck*/,/*Color*/, /*lHorz*/, nWidth, nHeigth,.T./*teste vertical*/,/*cFont*/,/*cMode*/,/*lPrint*/,nPFWidth,nPFHeigth,lCmtr2Pix)
  
 			
@@ -99,19 +104,19 @@ Static Function ImpEtiq()
 
 			oPrinter:Say(nLin + 10, nCol + 150, alltrim(QRYTMP->DY3_DESCRI) + "   RISCO " +  QRYTMP->DY3_NRISCO	 ,oFont16)
 			nLin+= 40
-			oPrinter:Say(nLin + 20, nCol + 165, alltrim(QRYTMP->DY3_NRISCO) ,oFont45)
+			oPrinter:Say(nLin + 35, nCol + 165, alltrim(QRYTMP->DY3_NRISCO) ,oFont45)
 			nLin+= 40
 			//linha coluna
 			
-			//coluna linha tamanho
-			oPrinter:DataMatrix(300,200,alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN), 80)
+			//coluna linha tamanho - Não informado onde buscar o a sequencia do lote, Opção D3_LOTECTL
+			oPrinter:DataMatrix(320,160,alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN), 80)
 
 			nLin+= 40
 			oPrinter:Say(nLin + 10,nCol + 100, alltrim(QRYTMP->B1_DESC) ,oFont16)
 			nLin+= 10
 			oPrinter:Say(nLin + 10,nCol + 100,"Ordem de Produção: " + alltrim(QRYTMP->C2_NUM + " " + QRYTMP->C2_ITEM  + " " +  QRYTMP->C2_SEQUEN) ,oFont10)
 			nLin+= 10
-			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + " xxxxxxx" ,oFont10)
+			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + alltrim(cLote) ,oFont10)
 			nLin+= 10
 			oPrinter:Say(nLin + 10,nCol + 100,"Validade: " + dData ,oFont10)
 
@@ -149,10 +154,11 @@ Static Function ValidPerg()
 	Local aRet 		:= {}
 	Local aParamBox	:= {}
 	Local lRet 		:= .F.
-	Local aOpcoes	:= {}
+	Local aOpcoes	:= {"Microsoft Print to PDF"}
 	Local cProdDe	:= ""
 	Local cProdAte	:= ""
 	Local cLocal	:= Space(99)
+	Local nQuant    := 1
  
 	//If Empty(getMV("ZZ_IMPRESS")) //se o parametro estiver vazio, ja o defino com a impressora PDFCreator 
 	//	aOpcoes := {"PDFCreator"}
@@ -165,7 +171,7 @@ Static Function ValidPerg()
  
 	aAdd(aParamBox,{01,"Produto de"	  			,cProdDe 	,""					,"","SB1"	,"", 60,.F.})	// MV_PAR01
 	aAdd(aParamBox,{01,"Produto ate"	   		,cProdAte	,""					,"","SB1"	,"", 60,.T.})	// MV_PAR02
-	aAdd(aParamBox,{01,"Quantidade Etiqueta"	,1			,"@E 9999"			,"",""		,"", 60,.F.})	// MV_PAR03
+	aAdd(aParamBox,{01,"Quantidade Etiqueta"	,nQuant		,"@E 9999"			,"",""		,"", 60,.F.})	// MV_PAR03
 	aadd(aParamBox,{02,"Imprimir em"			,"Microsoft Print to PDF" /*Space(50)*/	,aOpcoes			,100,".T.",.T.,".T."})		// MV_PAR04
  
 	If ParamBox(aParamBox,"Etiqueta Produto",/*aRet*/,/*bOk*/,/*aButtons*/,.T.,,,,FUNNAME(),.T.,.T.)
