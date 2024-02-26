@@ -74,6 +74,7 @@ Static Function ImpEtiq()
 	oSetup:SetPropert(PD_DESTINATION , nLocal)
 	oSetup:SetPropert(PD_MARGIN      , {0,0,0,0})
 */
+	oPrinter:SetPaperSize(0,60,100)
 
 	cAliasTmp	:= GetNextAlias()
  	cQuery := " SELECT C2_FILIAL, C2_NUM, C2_ITEM, C2_SEQUEN, C2_OP,C2_PRODUTO,C2_DATPRI, "+CRLF 
