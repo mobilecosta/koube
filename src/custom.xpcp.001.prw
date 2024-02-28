@@ -85,7 +85,7 @@ Static Function ImpEtiq()
 	cQuery += " LEFT JOIN " + RetSqlName("SB5") + " SB5"+CRLF 
 	cQuery += " ON SB5.B5_FILIAL = '" + xFilial("SB1") + "'AND SB5.B5_COD = SC2.C2_PRODUTO AND SB5.D_E_L_E_T_ = ' '"+CRLF
 	cQuery += " LEFT JOIN " + RetSqlName("DY3") + " DY3 "+CRLF
-	cQuery += " ON DY3.DY3_FILIAL = '"+SUBSTR(xFilial("SB1"),1,4)+"'AND DY3.DY3_ONU = SB5.B5_ONU AND DY3.D_E_L_E_T_ = ' '"+CRLF
+	cQuery += " ON DY3.DY3_FILIAL = '"+SUBSTR(xFilial("SB1"),1,4)+"'AND DY3.DY3_ONU = SB5.B5_ONU AND DY3_ITEM ='01' AND DY3.D_E_L_E_T_ = ' '"+CRLF
 	cQuery += " WHERE SC2.C2_FILIAL ='" + xFilial("SC2")+"' AND "+CRLF
 	cQuery += "       SC2.C2_NUM+C2_ITEM+C2_SEQUEN BETWEEN '"+MV_PAR01+"' AND '"+MV_PAR02+"' AND "+CRLF 
 	cQuery += "       SC2.C2_PRODUTO BETWEEN '"+MV_PAR03+"' AND '"+MV_PAR04+"' AND "+CRLF 
@@ -122,17 +122,17 @@ Static Function ImpEtiq()
 			
 			oPrinter:Box(60, 90, 90, 180, "-3")                                                               
 		
- 			oPrinter:Say(nLin,nCol +225, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
+ 			oPrinter:Say(nLin,nCol +195, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
 			oPrinter:Say(nLin + 10, nCol + 040, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont10)
 			nLin+= 5
-			oPrinter:Say(nLin + 35, nCol + 115, alltrim((cAliasTmp)->DY3_NRISCO) ,oFont45)
 			nLin+= 5
 			//linha coluna
 			cData := DTOC(DaySum( stod((cAliasTmp)->C2_DATPRI), (cAliasTmp)->B1_PRVALID ))
 			cDatav:= SUBSTR(cData,4,2)+"/"+SUBSTR(cData,9,2)//validade
 
 			//coluna linha tamanho - Não informado onde buscar o a sequencia do lote, Opção D3_LOTECTL
-			oPrinter:DataMatrix(210,110,alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " +  (cAliasTmp)->C2_SEQUEN)+" "+cDatav, 80)
+			oPrinter:Say(210, 120, alltrim((cAliasTmp)->DY3_NRISCO) ,oFont45)
+			oPrinter:DataMatrix(190,110,alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " +  (cAliasTmp)->C2_SEQUEN)+" "+cDatav, 80)
 
 			nLin+= 95
 
