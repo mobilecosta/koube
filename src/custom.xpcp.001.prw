@@ -111,7 +111,6 @@ Static Function ImpEtiq()
 			MsProcTxt("Imprimindo "+alltrim((cAliasTmp)->B1_CODGTIN) + " - " + alltrim((cAliasTmp)->B1_DESC)+"...")
 
 			oPrinter:StartPage()
- 			nLin+= 45
 			nLinC		:= 4.95		//Linha que será impresso o Código de Barra
 			nColC		:= 1.6		//Coluna que será impresso o Código de Barra
 			nWidth	 	:= 0.0164	//Numero do Tamanho da barra. Default 0.025 limite de largura da etiqueta é 0.0164
@@ -121,33 +120,34 @@ Static Function ImpEtiq()
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
 			
-			oPrinter:Box(150, 130, 90, 290, "-3")                                                               
+			oPrinter:Box(60, 90, 90, 180, "-3")                                                               
 		
- 			oPrinter:Say(nLin,nCol +325, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont14)
-			oPrinter:Say(nLin + 10, nCol + 090, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont14)
-			nLin+= 40
-			oPrinter:Say(nLin + 35, nCol + 165, alltrim((cAliasTmp)->DY3_NRISCO) ,oFont45)
-			nLin+= 40
+ 			oPrinter:Say(nLin,nCol +225, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
+			oPrinter:Say(nLin + 10, nCol + 040, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont10)
+			nLin+= 5
+			oPrinter:Say(nLin + 35, nCol + 115, alltrim((cAliasTmp)->DY3_NRISCO) ,oFont45)
+			nLin+= 5
 			//linha coluna
 			cData := DTOC(DaySum( stod((cAliasTmp)->C2_DATPRI), (cAliasTmp)->B1_PRVALID ))
 			cDatav:= SUBSTR(cData,4,2)+"/"+SUBSTR(cData,9,2)//validade
 
 			//coluna linha tamanho - Não informado onde buscar o a sequencia do lote, Opção D3_LOTECTL
-			oPrinter:DataMatrix(320,160,alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " +  (cAliasTmp)->C2_SEQUEN)+" "+cDatav, 80)
+			oPrinter:DataMatrix(210,110,alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " +  (cAliasTmp)->C2_SEQUEN)+" "+cDatav, 80)
 
-			nLin+= 40
-			oPrinter:Say(nLin + 10,nCol + 100, alltrim((cAliasTmp)->B1_DESC) ,oFont16)
-			nLin+= 10
-			oPrinter:Say(nLin + 10,nCol + 100,"Ordem de Produção: " + alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " + (cAliasTmp)->C2_SEQUEN) ,oFont10)
-			nLin+= 10
+			nLin+= 95
+
+			oPrinter:Say(nLin + 10,nCol + 50, alltrim((cAliasTmp)->B1_DESC) ,oFont16)
+			nLin+= 12
+			oPrinter:Say(nLin + 10,nCol + 50,"Ordem de Produção: " + alltrim((cAliasTmp)->C2_NUM + " " + (cAliasTmp)->C2_ITEM  + " " + (cAliasTmp)->C2_SEQUEN) ,oFont10)
+			nLin+= 12
 
 			cLote := (cAliasTmp)->C2_NUM+(cAliasTmp)->C2_ITEM+(cAliasTmp)->C2_SEQUEN+'001'
 			If cLote = " " 
 				cLote := "xxxxxx"
 			Endif	
-			oPrinter:Say(nLin + 10,nCol + 100,"Lote: " + alltrim(cLote) ,oFont10)
-			nLin+= 10
-   			oPrinter:Say(nLin + 10,nCol + 100,"Validade: " + cDatav ,oFont10)
+			oPrinter:Say(nLin + 10,nCol + 50,"Lote: " + alltrim(cLote) ,oFont10)
+			nLin+= 12
+   			oPrinter:Say(nLin + 10,nCol + 50,"Validade: " + cDatav ,oFont10)
             oPrinter:FwMsBar("CODE128", 1.5, 1,(cAliasTmp)->B1_CODGTIN, oPrinter, .T., NIL, .f., 0.02, 0.8, .F.,"Arial" , NIL, .F.)
           
 			oPrinter:EndPage()

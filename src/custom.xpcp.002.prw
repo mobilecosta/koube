@@ -16,15 +16,12 @@ Local cSemaforo := "SEQLOTOP"+cOp
     End
     BeginSql Alias cAliasTrb
         SELECT COUNT(*) QTDE 
-        FROM %table:SD3% 
-        WHERE D3_FILIAL = %xFilial:SD3%
-            AND D3_OP=%exp:cOp% 
-            AND D3_TM='010' 
-            AND %notDel%
+          FROM %table:SD3% 
+         WHERE D3_FILIAL = %xFilial:SD3% AND SUBSTRING(D3_OP, 1,8) = %exp:lEFT(cOp, 8)% AND D3_CF = 'PR0'
+          AND D3_ESTORNO <> 'S' AND %notDel%
     EndSql
-    If !(cAliasTrb)->(Eof())
-        cRet := Strzero((cAliasTrb)->QTDE,3)
-    EndIf
+    cRet := Strzero((cAliasTrb)->QTDE + 1,3)
+    cRet := AllTrim(cOp) + cRet
     (cAliasTrb)->(DBCloseArea())
     RestArea(aArea)
     UnLockByName(cSemaforo)
