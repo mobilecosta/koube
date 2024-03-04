@@ -122,7 +122,7 @@ Static Function ImpEtiq()
 			
 			oPrinter:Box(60, 90, 90, 180, "-3")                                                               
 
-			oPrinter:Say(80,nCol + 90, alltrim((cAliasTmp)->C2_PRODUTO) ,oFont10)
+			oPrinter:Say(80,nCol + 100, alltrim((cAliasTmp)->C2_PRODUTO) ,oFont16)
 
  			oPrinter:Say(nLin,nCol +195, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
 			oPrinter:Say(nLin + 10, nCol + 040, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont10)
@@ -152,8 +152,8 @@ Static Function ImpEtiq()
    			oPrinter:Say(nLin + 10,nCol + 50,"Validade: " + cDatav ,oFont10)
 			// FWMsPrinter():FWMsBar(cTypeBar,nRow,nCol,cCode,oPrint,lCheck,Color,lHorz, nWidth,nHeigth,lBanner,cFont,cMode,lPrint,nPFWidth,nPFHeigth,lCmtr2Pix)
             oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,(cAliasTmp)->B1_CODGTIN /* cCode */, oPrinter /* oPrint */,;
-								.T. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.02 /* nWidth */, 0.8 /* nHeigth */, .F. /* lBanner */,;
-								"Arial" /* cFont */ , NIL /* cMode */, .F. /* lPrint */, 0.8 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
+								.F. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.0164 /* nWidth */, 0.6 /* nHeigth */, .F. /* lBanner */,;
+								 /* cFont */ , NIL /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 1 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
           
 			oPrinter:EndPage()
 
