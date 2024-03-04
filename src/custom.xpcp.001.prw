@@ -121,7 +121,9 @@ Static Function ImpEtiq()
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
 			
 			oPrinter:Box(60, 90, 90, 180, "-3")                                                               
-		
+
+			oPrinter:Say(80,nCol + 90, alltrim((cAliasTmp)->C2_PRODUTO) ,oFont10)
+
  			oPrinter:Say(nLin,nCol +195, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
 			oPrinter:Say(nLin + 10, nCol + 040, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont10)
 			nLin+= 5
@@ -148,7 +150,10 @@ Static Function ImpEtiq()
 			oPrinter:Say(nLin + 10,nCol + 50,"Lote: " + alltrim(cLote) ,oFont10)
 			nLin+= 12
    			oPrinter:Say(nLin + 10,nCol + 50,"Validade: " + cDatav ,oFont10)
-            oPrinter:FwMsBar("CODE128", 1.5, 1,(cAliasTmp)->B1_CODGTIN, oPrinter, .T., NIL, .f., 0.02, 0.8, .F.,"Arial" , NIL, .F.)
+			// FWMsPrinter():FWMsBar(cTypeBar,nRow,nCol,cCode,oPrint,lCheck,Color,lHorz, nWidth,nHeigth,lBanner,cFont,cMode,lPrint,nPFWidth,nPFHeigth,lCmtr2Pix)
+            oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,(cAliasTmp)->B1_CODGTIN /* cCode */, oPrinter /* oPrint */,;
+								.T. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.02 /* nWidth */, 0.8 /* nHeigth */, .F. /* lBanner */,;
+								"Arial" /* cFont */ , NIL /* cMode */, .F. /* lPrint */, 0.8 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
           
 			oPrinter:EndPage()
 
