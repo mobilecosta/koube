@@ -28,6 +28,7 @@ Static Function ImpEtiq()
 	Local _cCodPro	:= MV_PAR03
 	Local nQuant	:= MV_PAR05
 	Local cImpress  := MV_PAR06 //"Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
+	Local oFont32   := TFont():New('Arial',32,32,,.F.,,,,.T.,.F.,.F.)
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont10	:= TFont():New('Arial',10,10,,.F.,,,,.T.,.F.,.F.)
 	Local oFont45	:= TFont():New('Arial',45,45,,.F.,,,,.T.,.F.,.F.)
@@ -120,9 +121,9 @@ Static Function ImpEtiq()
 			nPFHeigth	:= 0.9		//Número do índice de ajuste da altura da fonte. Default 1
 			lCmtr2Pix	:= .T.		//Utiliza o método Cmtr2Pix() do objeto Printer.Default .T.
 			
-			oPrinter:Box(60, 90, 90, 180, "-3")                                                               
+			oPrinter:Box(40, 60, 100, 180, "-3")                                                               
 
-			oPrinter:Say(80,nCol + 100, alltrim((cAliasTmp)->C2_PRODUTO) ,oFont16)
+			oPrinter:Say(80,85, alltrim((cAliasTmp)->C2_PRODUTO) ,oFont32)
 
  			oPrinter:Say(nLin,nCol +195, "ONU " + alltrim((cAliasTmp)->DY3_ONU),oFont10)
 			oPrinter:Say(nLin + 10, nCol + 040, alltrim((cAliasTmp)->DY3_DESCRI) + "  RISCO " + (cAliasTmp)->DY3_NRISCO ,oFont10)
