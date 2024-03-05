@@ -25,20 +25,16 @@ Return
    
 Static Function ImpEtiq()
 	Local cQuery	:= ""
-	Local _cCodPro	:= MV_PAR03
 	Local nQuant	:= MV_PAR05
-	Local cImpress  := MV_PAR06 //"Microsoft Print to PDF" //Alltrim(MV_PAR04) //pego o nome da impressora
 	Local oFont32   := TFont():New('Arial',32,32,,.F.,,,,.T.,.F.,.F.)
 	Local oFont16	:= TFont():New('Arial',16,16,,.F.,,,,.T.,.F.,.F.)
 	Local oFont10	:= TFont():New('Arial',10,10,,.F.,,,,.T.,.F.,.F.)
 	Local oFont45	:= TFont():New('Arial',45,45,,.F.,,,,.T.,.F.,.F.)
-	Local oFont14	:= TFont():New('Arial',14,14,,.F.,,,,.T.,.F.,.F.)
 
 	Local cLote		:= "001"
 	Local cData     := STOD("  /  /  ")
 	Local cDatav    := " "
  	Local lAdjustToLegacy 	:= .F.
-	Local lDisableSetup  	:= .F.
  
 	Local nLin		:= 0
 	Local nCol		:= 0
@@ -55,26 +51,14 @@ Static Function ImpEtiq()
 	Local cAliasTmp    := " "
 	Local nR           := 0
 	Local cLocal       := "c:\temp\"
-	Local nPrintType   := 6
     Local cFile        := 'ETQOP'+ALLTRIM(MV_PAR01)+'.PDF'
 	Local oPrinter     := Nil
-	Local oSetup	   := Nil
-	Local cRelName	   := "APCPET001"
-	Local nFlags	   := PD_ISTOTVSPRINTER+PD_DISABLEORIENTATION
-	Local aDevice	   := {"PDF"}//{"DISCO","SPOOL","EMAIL","EXCEL","HTML","PDF"}
 	Local cDevice	   := "PDF"
 	Local cSession	:= GetPrinterSession()
 
 	MsProcTxt("Identificando a impressora...")
 	cDevice	:= If(Empty(fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.)),"PDF",fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.))
-    //nPrintType	:= aScan(aDevice,{|x| x == cDevice })     
     oPrinter	:= FWMSPrinter():New(cFile, 6, lAdjustToLegacy ,cLocal, .T.)
-   /* oSetup		:= FWPrintSetup():New (nFlags,cRelName)
-	oSetup:SetPropert(PD_PRINTTYPE   , nPrintType)
-	oSetup:SetPropert(PD_ORIENTATION , nOrient)
-	oSetup:SetPropert(PD_DESTINATION , nLocal)
-	oSetup:SetPropert(PD_MARGIN      , {0,0,0,0})
-*/
 	oPrinter:SetPaperSize(0,60,100)
 
 	cAliasTmp	:= GetNextAlias()
@@ -155,7 +139,6 @@ Static Function ImpEtiq()
             oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,(cAliasTmp)->B1_CODGTIN /* cCode */, oPrinter /* oPrint */,;
 								.F. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.0164 /* nWidth */, 0.6 /* nHeigth */, .F. /* lBanner */,;
 								 /* cFont */ , NIL /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
-          
 			oPrinter:EndPage()
 
 		Next
