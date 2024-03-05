@@ -138,7 +138,7 @@ Static Function ImpEtiq()
 			// FWMsPrinter():FWMsBar(cTypeBar,nRow,nCol,cCode,oPrint,lCheck,Color,lHorz, nWidth,nHeigth,lBanner,cFont,cMode,lPrint,nPFWidth,nPFHeigth,lCmtr2Pix)
             oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,(cAliasTmp)->B1_CODGTIN /* cCode */, oPrinter /* oPrint */,;
 								.F. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.0164 /* nWidth */, 0.6 /* nHeigth */, .F. /* lBanner */,;
-								 /* cFont */ , NIL /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
+								 /* cFont */ , "C" /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
 			oPrinter:EndPage()
 
 		Next
