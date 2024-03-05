@@ -136,9 +136,9 @@ Static Function ImpEtiq()
 			nLin+= 12
    			oPrinter:Say(nLin + 10,nCol + 50,"Validade: " + cDatav ,oFont10)
 			// FWMsPrinter():FWMsBar(cTypeBar,nRow,nCol,cCode,oPrint,lCheck,Color,lHorz, nWidth,nHeigth,lBanner,cFont,cMode,lPrint,nPFWidth,nPFHeigth,lCmtr2Pix)
-            oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,(cAliasTmp)->B1_CODGTIN /* cCode */, oPrinter /* oPrint */,;
-								.F. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.0164 /* nWidth */, 0.6 /* nHeigth */, .F. /* lBanner */,;
-								 /* cFont */ , "C" /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 0.9 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
+            oPrinter:FwMsBar(	"CODE128" /* cTypeBar */, 0.8 /* nRow */, 1 /* nCol */,AllTrim((cAliasTmp)->B1_CODGTIN) /* cCode */, oPrinter /* oPrint */,;
+								.F. /* lCheck */, NIL /* Color */, .f. /* lHorz */, 0.0164 /* nWidth */, 0.8 /* nHeigth */, .F. /* lBanner */,;
+								 /* cFont */ , /* cMode */, .F. /* lPrint */,  1 /* nPFWidth */, 1 /*nPFHeigth */, .F. /*lCmtr2Pix*/)
 			oPrinter:EndPage()
 
 		Next
