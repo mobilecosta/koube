@@ -1,8 +1,6 @@
 #INCLUDE "RPTDEF.CH"
 #INCLUDE "FWPrintSetup.ch"
-#INCLUDE "protheus.ch"
-#Include "TopConn.ch"
-#INCLUDE "msobject.ch"
+#INCLUDE "totvs.ch"
 //--------------------------------------------
 /*/{Protheus.doc} CUSTOM.XPCP.001
 RELATORIO IMPRESSAO DE ETIQUETA
@@ -52,14 +50,60 @@ Static Function ImpEtiq()
 	Local nR           := 0
 	Local cLocal       := "c:\temp\"
     Local cFile        := 'ETQOP'+ALLTRIM(MV_PAR01)+'.PDF'
-	Local oPrinter     := Nil
-	Local cDevice	   := "PDF"
-	Local cSession	:= GetPrinterSession()
+	Local cSession		:= GetPrinterSession()
+	Local nFlags		:= PD_ISTOTVSPRINTER+PD_DISABLEORIENTATION
+	Local nLocal		:= 1
+	Local nOrdem		:= 1
+	Local nOrient		:= 1
+	Local nPrintType	:= 6
+	Local oPrinter		:= Nil
+	Local oSetup		:= Nil
+	Local aOrdem		:= {"Padrao" }
+	Local aDevice		:= {"DISCO","SPOOL","EMAIL","EXCEL","HTML","PDF"}
+	Local bParam		:= {|| ValidPerg() }
+	Local cDevice		:= ""
+
+	cSession	:= GetPrinterSession()
+	cDevice		:= If(Empty(fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.)),"PDF",fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.))
+	nOrient		:= 1
+	nLocal		:= 1
+	nPrintType	:= aScan(aDevice,{|x| x == cDevice })     
 
 	MsProcTxt("Identificando a impressora...")
-	cDevice	:= If(Empty(fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.)),"PDF",fwGetProfString(cSession,"PRINTTYPE","SPOOL",.T.))
-    oPrinter	:= FWMSPrinter():New(cFile, 6, lAdjustToLegacy ,cLocal, .T.)
-	oPrinter:SetPaperSize(0,60,100)
+    oPrinter := FWMSPrinter():New(cFile, 6, lAdjustToLegacy ,cLocal, .T.)
+	oSetup	 := FWPrintSetup():New (nFlags,cFile)
+
+	oSetup:SetPropert(PD_PRINTTYPE   , nPrintType)
+	oSetup:SetPropert(PD_ORIENTATION , nOrient)
+	oSetup:SetPropert(PD_DESTINATION , nLocal)
+	oSetup:SetOrderParms(aOrdem,@nOrdem)
+	oSetup:SetUserParms(bParam)
+
+	If oSetup:Activate() == PD_OK 
+		fwWriteProfString(cSession, "LOCAL"      , If(oSetup:GetProperty(PD_DESTINATION)==1 ,"SERVER"    ,"CLIENT"    ), .T. )	
+		fwWriteProfString(cSession, "PRINTTYPE"  , If(oSetup:GetProperty(PD_PRINTTYPE)==2   ,"SPOOL"     ,"PDF"       ), .T. )	
+		fwWriteProfString(cSession, "ORIENTATION", If(oSetup:GetProperty(PD_ORIENTATION)==1 ,"PORTRAIT"  ,"LANDSCAPE" ), .T. )
+			
+		oPrinter:lServer			:= oSetup:GetProperty(PD_DESTINATION) == AMB_SERVER	
+		oPrinter:SetDevice(oSetup:GetProperty(PD_PRINTTYPE))
+		oPrinter:setCopies(1)
+		oPrinter:SetPaperSize(0,60,100)
+		
+		If oSetup:GetProperty(PD_PRINTTYPE) == IMP_SPOOL
+			oPrinter:nDevice		:= IMP_SPOOL
+			fwWriteProfString(GetPrinterSession(),"DEFAULT", oSetup:aOptions[PD_VALUETYPE], .T.)
+			oPrinter:cPrinter		:= oSetup:aOptions[PD_VALUETYPE]
+		Else 
+			oPrinter:nDevice		:= IMP_PDF
+			oPrinter:cPathPDF		:= oSetup:aOptions[PD_VALUETYPE]
+			oPrinter:SetViewPDF(.T.)
+		Endif
+	Else 
+		MsgInfo("Relatório cancelado pelo usuário.")
+		oPrinter:Cancel()
+
+		Return
+	EndIf
 
 	cAliasTmp	:= GetNextAlias()
  	cQuery := " SELECT C2_FILIAL, C2_NUM, C2_ITEM, C2_SEQUEN, C2_OP,C2_PRODUTO,C2_DATPRI, "+CRLF 
@@ -146,8 +190,8 @@ Static Function ImpEtiq()
 	EndDo
 	(cAliasTmp)->(DbCloseArea())
 	
-	oPrinter:Preview()
-	//oPrinter:Print()
+	//oPrinter:Preview()
+	oPrinter:Print()
 	
  
 Return
@@ -156,7 +200,6 @@ Return
 Static Function ValidPerg()
 	Local aParamBox	:= {}
 	Local lRet 		:= .F.
-	Local aOpcoes	:= {"Microsoft Print to PDF"}
 	Local cProdDe	:= ""
 	Local cProdAte	:= ""
 	Local nTamop    := (TamSX3("C2_NUM")[1])+(TamSX3("C2_ITEM")[1])+(TamSX3("C2_SEQUEN")[1])
@@ -172,14 +215,8 @@ Static Function ValidPerg()
 	aAdd(aParamBox,{01,"Produto de"	  			,cProdDe 	,""					,"","SB1"	,"", 60,.F.})	// MV_PAR03
 	aAdd(aParamBox,{01,"Produto ate"	   		,cProdAte	,""					,"","SB1"	,"", 60,.T.})	// MV_PAR04
 	aAdd(aParamBox,{01,"Quantidade Etiqueta"	,nQuant		,"@E 9999"			,"",""		,"", 60,.F.})	// MV_PAR05
-	aadd(aParamBox,{02,"Imprimir em"			,"Microsoft Print to PDF" /*Space(50)*/	,aOpcoes,100,".T.",.T.,".T."})	// MV_PAR06
   	
 	IF ParamBox(aParamBox,"Etiqueta Produto",/*aRet*/,/*bOk*/,/*aButtons*/,.T.,,,,FUNNAME(),.T.,.T.)
- 
-		If ValType(MV_PAR06) == "N" //Algumas vezes ocorre um erro de ao invés de selecionar o conteúdo, seleciona a ordem, então verifico se é numerico, se for, eu me posiciono na impressora desejada para pegar o seu nome
-			MV_PAR06 := aOpcoes[MV_PAR06]
-		EndIf
- 
 		lRet := .T.
 	EndIf
 
